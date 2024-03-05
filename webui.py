@@ -1,4 +1,6 @@
 import os,shutil,sys,pdb,re
+import yaml
+
 now_dir = os.getcwd()
 sys.path.append(now_dir)
 import json,yaml,warnings,torch
@@ -271,7 +273,7 @@ def open1Bb(batch_size,total_epoch,exp_name,if_dpo,if_save_latest,if_save_every_
     if(p_train_GPT==None):
         with open("GPT_SoVITS/configs/s1longer.yaml")as f:
             data=f.read()
-            data=yaml.load(data, Loader=yaml.FullLoader)
+            data=yaml.load(data, Loader=yaml.SafeLoader)
         s1_dir="%s/%s"%(exp_root,exp_name)
         os.makedirs("%s/logs_s1"%(s1_dir),exist_ok=True)
         if(is_half==False):
