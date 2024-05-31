@@ -1,3 +1,4 @@
+# Testing pixee
 import sys
 from PyQt5.QtCore import QEvent
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QTextEdit
@@ -317,9 +318,8 @@ class GPTSoVITSGUI(QMainWindow):
                                        text=target_text, 
                                        text_language=language_combobox_02)
         
-        result_list = list(synthesis_result)
 
-        if result_list:
+        if result_list := list(synthesis_result):
             last_sampling_rate, last_audio_data = result_list[-1]
             output_wav_path = os.path.join(output_path, "output.wav") 
             sf.write(output_wav_path, last_audio_data, last_sampling_rate)
