@@ -106,7 +106,7 @@ def read_dict():
     g2p_dict = {}
     start_line = 49
     with open(CMU_DICT_PATH) as f:
-        line = f.readline()
+        line = f.readline(5_000_000)
         line_index = 1
         while line:
             if line_index >= start_line:
@@ -121,7 +121,7 @@ def read_dict():
                     g2p_dict[word].append(phone_split)
 
             line_index = line_index + 1
-            line = f.readline()
+            line = f.readline(5_000_000)
 
     return g2p_dict
 
@@ -129,7 +129,7 @@ def read_dict():
 def read_dict_new():
     g2p_dict = {}
     with open(CMU_DICT_PATH) as f:
-        line = f.readline()
+        line = f.readline(5_000_000)
         line_index = 1
         while line:
             if line_index >= 49:
@@ -144,10 +144,10 @@ def read_dict_new():
                     g2p_dict[word].append(phone_split)
 
             line_index = line_index + 1
-            line = f.readline()
+            line = f.readline(5_000_000)
 
     with open(CMU_DICT_FAST_PATH) as f:
-        line = f.readline()
+        line = f.readline(5_000_000)
         line_index = 1
         while line:
             if line_index >= 0:
@@ -159,10 +159,10 @@ def read_dict_new():
                     g2p_dict[word].append(word_split[1:])
 
             line_index = line_index + 1
-            line = f.readline()
+            line = f.readline(5_000_000)
 
     with open(CMU_DICT_HOT_PATH) as f:
-        line = f.readline()
+        line = f.readline(5_000_000)
         line_index = 1
         while line:
             if line_index >= 0:
@@ -174,7 +174,7 @@ def read_dict_new():
                 g2p_dict[word].append(word_split[1:])
 
             line_index = line_index + 1
-            line = f.readline()
+            line = f.readline(5_000_000)
     
     return g2p_dict
 
