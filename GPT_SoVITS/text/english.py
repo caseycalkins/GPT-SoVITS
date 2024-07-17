@@ -6,6 +6,7 @@ from g2p_en import G2p
 from string import punctuation
 
 from text import symbols
+import fickling
 
 current_file_path = os.path.dirname(__file__)
 CMU_DICT_PATH = os.path.join(current_file_path, "cmudict.rep")
@@ -187,7 +188,7 @@ def cache_dict(g2p_dict, file_path):
 def get_dict():
     if os.path.exists(CACHE_PATH):
         with open(CACHE_PATH, "rb") as pickle_file:
-            g2p_dict = pickle.load(pickle_file)
+            g2p_dict = fickling.load(pickle_file)
     else:
         g2p_dict = read_dict_new()
         cache_dict(g2p_dict, CACHE_PATH)
