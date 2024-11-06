@@ -1,4 +1,5 @@
 import utils, os
+import secrets
 
 hps = utils.get_hparams(stage=2)
 os.environ["CUDA_VISIBLE_DEVICES"] = hps.train.gpu_numbers.replace("-", ",")
@@ -16,7 +17,6 @@ import logging, traceback
 logging.getLogger("matplotlib").setLevel(logging.INFO)
 logging.getLogger("h5py").setLevel(logging.INFO)
 logging.getLogger("numba").setLevel(logging.INFO)
-from random import randint
 from module import commons
 
 from module.data_utils import (
@@ -51,7 +51,7 @@ def main():
     else:
         n_gpus = torch.cuda.device_count()
     os.environ["MASTER_ADDR"] = "localhost"
-    os.environ["MASTER_PORT"] = str(randint(20000, 55555))
+    os.environ["MASTER_PORT"] = str(secrets.SystemRandom().randint(20000, 55555))
 
     mp.spawn(
         run,
