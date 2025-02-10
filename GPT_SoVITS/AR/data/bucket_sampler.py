@@ -1,8 +1,6 @@
 # modified from https://github.com/feng-yufei/shared_debugging_code/blob/main/bucketsampler.py
 import itertools
 import math
-import random
-from random import shuffle
 from typing import Iterator
 from typing import Optional
 from typing import TypeVar
@@ -11,6 +9,7 @@ import torch
 import torch.distributed as dist
 from torch.utils.data import Dataset
 from torch.utils.data import Sampler
+import secrets
 
 __all__ = [
     "DistributedBucketSampler",
@@ -108,11 +107,11 @@ class DistributedBucketSampler(Sampler[T_co]):
             # deterministically shuffle based on epoch and seed
             g = torch.Generator()
             g.manual_seed(self.seed + self.epoch)
-            random.seed(self.epoch + self.seed)
+            secrets.SystemRandom().seed(self.epoch + self.seed)
             shuffled_bucket = []
             for buc in self.id_buckets:
                 buc_copy = buc.copy()
-                shuffle(buc_copy)
+                secrets.SystemRandom().shuffle(buc_copy)
                 shuffled_bucket.append(buc_copy)
             grouped_batch_size = self.batch_size * self.num_replicas
             shuffled_bucket = list(itertools.chain(*shuffled_bucket))
@@ -121,7 +120,7 @@ class DistributedBucketSampler(Sampler[T_co]):
                 shuffled_bucket[b * grouped_batch_size : (b + 1) * grouped_batch_size]
                 for b in range(n_batch)
             ]
-            shuffle(batches)
+            secrets.SystemRandom().shuffle(batches)
             indices = list(itertools.chain(*batches))
         else:
             # type: ignore[arg-type]
