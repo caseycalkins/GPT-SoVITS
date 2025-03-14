@@ -1,4 +1,6 @@
 import os,shutil,sys,pdb,re
+from security import safe_command
+
 now_dir = os.getcwd()
 sys.path.append(now_dir)
 import json,yaml,warnings,torch
@@ -154,7 +156,7 @@ def change_label(if_label,path_list):
         cmd = '"%s" tools/subfix_webui.py --load_list "%s" --webui_port %s --is_share %s'%(python_exec,path_list,webui_port_subfix,is_share)
         yield i18n("打标工具WebUI已开启")
         print(cmd)
-        p_label = Popen(cmd, shell=True)
+        p_label = safe_command.run(Popen, cmd, shell=True)
     elif(if_label==False and p_label!=None):
         kill_process(p_label.pid)
         p_label=None
@@ -166,7 +168,7 @@ def change_uvr5(if_uvr5):
         cmd = '"%s" tools/uvr5/webui.py "%s" %s %s %s'%(python_exec,infer_device,is_half,webui_port_uvr5,is_share)
         yield i18n("UVR5已开启")
         print(cmd)
-        p_uvr5 = Popen(cmd, shell=True)
+        p_uvr5 = safe_command.run(Popen, cmd, shell=True)
     elif(if_uvr5==False and p_uvr5!=None):
         kill_process(p_uvr5.pid)
         p_uvr5=None
@@ -186,7 +188,7 @@ def change_tts_inference(if_tts,bert_path,cnhubert_base_path,gpu_number,gpt_path
         cmd = '"%s" GPT_SoVITS/inference_webui.py'%(python_exec)
         yield i18n("TTS推理进程已开启")
         print(cmd)
-        p_tts_inference = Popen(cmd, shell=True)
+        p_tts_inference = safe_command.run(Popen, cmd, shell=True)
     elif(if_tts==False and p_tts_inference!=None):
         kill_process(p_tts_inference.pid)
         p_tts_inference=None
@@ -206,7 +208,7 @@ def open_asr(asr_inp_dir, asr_opt_dir, asr_model, asr_model_size, asr_lang):
 
         yield "ASR任务开启：%s"%cmd,{"__type__":"update","visible":False},{"__type__":"update","visible":True}
         print(cmd)
-        p_asr = Popen(cmd, shell=True)
+        p_asr = safe_command.run(Popen, cmd, shell=True)
         p_asr.wait()
         p_asr=None
         yield f"ASR任务完成, 查看终端进行下一步",{"__type__":"update","visible":True},{"__type__":"update","visible":False}
@@ -251,7 +253,7 @@ def open1Ba(batch_size,total_epoch,exp_name,text_low_lr_rate,if_save_latest,if_s
         cmd = '"%s" GPT_SoVITS/s2_train.py --config "%s"'%(python_exec,tmp_config_path)
         yield "SoVITS训练开始：%s"%cmd,{"__type__":"update","visible":False},{"__type__":"update","visible":True}
         print(cmd)
-        p_train_SoVITS = Popen(cmd, shell=True)
+        p_train_SoVITS = safe_command.run(Popen, cmd, shell=True)
         p_train_SoVITS.wait()
         p_train_SoVITS=None
         yield "SoVITS训练完成",{"__type__":"update","visible":True},{"__type__":"update","visible":False}
@@ -298,7 +300,7 @@ def open1Bb(batch_size,total_epoch,exp_name,if_dpo,if_save_latest,if_save_every_
         cmd = '"%s" GPT_SoVITS/s1_train.py --config_file "%s" '%(python_exec,tmp_config_path)
         yield "GPT训练开始：%s"%cmd,{"__type__":"update","visible":False},{"__type__":"update","visible":True}
         print(cmd)
-        p_train_GPT = Popen(cmd, shell=True)
+        p_train_GPT = safe_command.run(Popen, cmd, shell=True)
         p_train_GPT.wait()
         p_train_GPT=None
         yield "GPT训练完成",{"__type__":"update","visible":True},{"__type__":"update","visible":False}
@@ -329,7 +331,7 @@ def open_slice(inp,opt_root,threshold,min_length,min_interval,hop_size,max_sil_k
         for i_part in range(n_parts):
             cmd = '"%s" tools/slice_audio.py "%s" "%s" %s %s %s %s %s %s %s %s %s''' % (python_exec,inp, opt_root, threshold, min_length, min_interval, hop_size, max_sil_kept, _max, alpha, i_part, n_parts)
             print(cmd)
-            p = Popen(cmd, shell=True)
+            p = safe_command.run(Popen, cmd, shell=True)
             ps_slice.append(p)
         yield "切割执行中", {"__type__": "update", "visible": False}, {"__type__": "update", "visible": True}
         for p in ps_slice:
@@ -378,7 +380,7 @@ def open1a(inp_text,inp_wav_dir,exp_name,gpu_numbers,bert_pretrained_dir):
             os.environ.update(config)
             cmd = '"%s" GPT_SoVITS/prepare_datasets/1-get-text.py'%python_exec
             print(cmd)
-            p = Popen(cmd, shell=True)
+            p = safe_command.run(Popen, cmd, shell=True)
             ps1a.append(p)
         yield "文本进程执行中", {"__type__": "update", "visible": False}, {"__type__": "update", "visible": True}
         for p in ps1a:
@@ -435,7 +437,7 @@ def open1b(inp_text,inp_wav_dir,exp_name,gpu_numbers,ssl_pretrained_dir):
             os.environ.update(config)
             cmd = '"%s" GPT_SoVITS/prepare_datasets/2-get-hubert-wav32k.py'%python_exec
             print(cmd)
-            p = Popen(cmd, shell=True)
+            p = safe_command.run(Popen, cmd, shell=True)
             ps1b.append(p)
         yield "SSL提取进程执行中", {"__type__": "update", "visible": False}, {"__type__": "update", "visible": True}
         for p in ps1b:
@@ -483,7 +485,7 @@ def open1c(inp_text,exp_name,gpu_numbers,pretrained_s2G_path):
             os.environ.update(config)
             cmd = '"%s" GPT_SoVITS/prepare_datasets/3-get-semantic.py'%python_exec
             print(cmd)
-            p = Popen(cmd, shell=True)
+            p = safe_command.run(Popen, cmd, shell=True)
             ps1c.append(p)
         yield "语义token提取进程执行中", {"__type__": "update", "visible": False}, {"__type__": "update", "visible": True}
         for p in ps1c:
@@ -545,7 +547,7 @@ def open1abc(inp_text,inp_wav_dir,exp_name,gpu_numbers1a,gpu_numbers1Ba,gpu_numb
                     os.environ.update(config)
                     cmd = '"%s" GPT_SoVITS/prepare_datasets/1-get-text.py'%python_exec
                     print(cmd)
-                    p = Popen(cmd, shell=True)
+                    p = safe_command.run(Popen, cmd, shell=True)
                     ps1abc.append(p)
                 yield "进度：1a-ing", {"__type__": "update", "visible": False}, {"__type__": "update", "visible": True}
                 for p in ps1abc:p.wait()
@@ -582,7 +584,7 @@ def open1abc(inp_text,inp_wav_dir,exp_name,gpu_numbers1a,gpu_numbers1Ba,gpu_numb
                 os.environ.update(config)
                 cmd = '"%s" GPT_SoVITS/prepare_datasets/2-get-hubert-wav32k.py'%python_exec
                 print(cmd)
-                p = Popen(cmd, shell=True)
+                p = safe_command.run(Popen, cmd, shell=True)
                 ps1abc.append(p)
             yield "进度：1a-done, 1b-ing", {"__type__": "update", "visible": False}, {"__type__": "update", "visible": True}
             for p in ps1abc:p.wait()
@@ -611,7 +613,7 @@ def open1abc(inp_text,inp_wav_dir,exp_name,gpu_numbers1a,gpu_numbers1Ba,gpu_numb
                     os.environ.update(config)
                     cmd = '"%s" GPT_SoVITS/prepare_datasets/3-get-semantic.py'%python_exec
                     print(cmd)
-                    p = Popen(cmd, shell=True)
+                    p = safe_command.run(Popen, cmd, shell=True)
                     ps1abc.append(p)
                 yield "进度：1a1b-done, 1cing", {"__type__": "update", "visible": False}, {"__type__": "update", "visible": True}
                 for p in ps1abc:p.wait()
