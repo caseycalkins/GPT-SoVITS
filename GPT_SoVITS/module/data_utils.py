@@ -1,7 +1,6 @@
 import time
 import logging
 import os
-import random
 import traceback
 import numpy as np
 import torch
@@ -18,6 +17,7 @@ import requests
 from scipy.io import wavfile
 from io import BytesIO
 from my_utils import load_audio
+import secrets
 
 # ZeroDivisionError fixed by Tybost (https://github.com/RVC-Boss/GPT-SoVITS/issues/79)
 class TextAudioSpeakerLoader(torch.utils.data.Dataset):
@@ -63,8 +63,8 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
         self.sampling_rate = hparams.sampling_rate
         self.val = val
 
-        random.seed(1234)
-        random.shuffle(self.audiopaths_sid_text)
+        secrets.SystemRandom().seed(1234)
+        secrets.SystemRandom().shuffle(self.audiopaths_sid_text)
 
         print("phoneme_data_len:", len(self.phoneme_data.keys()))
         print("wav_data_len:", len(self.audiopaths_sid_text))
@@ -153,8 +153,8 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
         if self.val:
             reference_mel = mel[:, :len_mel // 3]
             return reference_mel, ssl, wav, mel
-        dir = random.randint(0, 1)
-        sep_point = random.randint(int(len_mel // 3), int(len_mel // 3 * 2))
+        dir = secrets.SystemRandom().randint(0, 1)
+        sep_point = secrets.SystemRandom().randint(int(len_mel // 3), int(len_mel // 3 * 2))
 
         if dir == 0:
             reference_mel = mel[:, :sep_point]

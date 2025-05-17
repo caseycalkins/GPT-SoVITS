@@ -15,7 +15,6 @@
 # limitations under the License.
 import logging
 import math
-import random
 from typing import Optional
 from typing import Tuple
 from typing import Union
@@ -23,6 +22,7 @@ from typing import Union
 import torch
 import torch.nn as nn
 from torch import Tensor
+import secrets
 
 
 class DoubleSwishFunction(torch.autograd.Function):
@@ -277,7 +277,7 @@ class ActivationBalancer(torch.nn.Module):
         count = self.cpu_count
         self.cpu_count += 1
 
-        if random.random() < 0.01:
+        if secrets.SystemRandom().random() < 0.01:
             # Occasionally sync self.cpu_count with self.count.
             # count affects the decay of 'prob'.  don't do this on every iter,
             # because syncing with the GPU is slow.
@@ -288,7 +288,7 @@ class ActivationBalancer(torch.nn.Module):
         # a floor at min_prob (==0.1, by default)
         prob = max(self.min_prob, 0.5 ** (1 + (count / 4000.0)))
 
-        if random.random() < prob:
+        if secrets.SystemRandom().random() < prob:
             sign_gain_factor = 0.5
             if self.min_positive != 0.0 or self.max_positive != 1.0:
                 sign_factor = _compute_sign_factor(
